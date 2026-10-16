@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>運費明細 - 林國華 - 2025年9月</title>
+<style>
+  :root {
+    --ink:#1a1a1a; --muted:#6b6b6b; --line:#d9d9d9; --line-strong:#9a9a9a;
+    --accent:#1f4e79; --paper:#ffffff; --tint:#f4f6f9; --payable:#b3261e;
+  }
+  * { box-sizing:border-box; }
+  html,body { margin:0; padding:0; background:#e9ecef; color:var(--ink);
+    font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+    font-size:15px; line-height:1.5; }
+  .sheet { background:var(--paper); width:210mm; min-height:297mm; margin:16px auto;
+    padding:14mm 12mm 16mm; box-shadow:0 2px 14px rgba(0,0,0,.12); }
+
+  table { width:100%; border-collapse:collapse; }
+
+  /* repeating page header (lives in thead -> prints on every page) */
+  thead .running-head th { padding:0 0 10px 0; border:0; text-align:left; }
+  .brand { display:flex; align-items:baseline; justify-content:space-between;
+    gap:12px; border-bottom:3px solid var(--accent); padding-bottom:8px; }
+  .brand h1 { font-size:19px; margin:0; letter-spacing:.5px; color:var(--accent);
+    font-weight:700; }
+  .brand .sub { font-size:12px; color:var(--muted); white-space:nowrap; }
+
+  /* stat tiles (first content row only) */
+  .tiles-row td { border:0; padding:14px 0 16px; }
+  .tiles { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+  .tile { border:1px solid var(--line); border-radius:10px; padding:14px 16px;
+    background:var(--tint); }
+  .tile .label { font-size:13px; color:var(--muted); display:flex; align-items:center; gap:6px; }
+  .tile .mark { color:var(--accent); font-size:14px; }
+  .tile .big { font-size:58px; line-height:1.05; font-weight:800; margin-top:4px;
+    letter-spacing:-1px; }
+  .tile .unit { font-size:16px; font-weight:600; color:var(--muted); }
+  .tile.payable .label { color:var(--payable); }
+  .tile.payable .big { color:var(--payable); }
+
+  /* detail table head */
+  thead .col-head th { background:var(--accent); color:#fff; font-size:12.5px;
+    font-weight:600; padding:8px 6px; border:1px solid var(--accent);
+    text-align:left; white-space:nowrap; }
+  tbody td { border:1px solid var(--line); padding:7px 6px; font-size:13px;
+    vertical-align:top; }
+  tbody tr:nth-child(odd):not(.tiles-row):not(.total-row) td { background:#fafbfc; }
+  .num { text-align:right; white-space:nowrap; }
+  .money { font-variant-numeric:tabular-nums; }
+  .date { white-space:nowrap; color:var(--muted); }
+  .route { min-width:120px; word-break:break-word; }
+  .note { font-size:11.5px; color:#444; max-width:72px; word-break:break-word; }
+
+  .total-row td { border-top:2px solid var(--line-strong);
+    border-bottom:2px solid var(--line-strong); font-weight:800;
+    font-size:14px; background:#eef2f7 !important; }
+  .total-row .money { color:var(--accent); }
+  .note-payable { color:var(--payable); font-weight:700; font-size:13px; }
+
+  tr { page-break-inside:avoid; break-inside:avoid; }
+
+  @page { size:A4; margin:12mm; }
+  @media print {
+    html,body { background:#fff; font-size:13px; -webkit-print-color-adjust:exact;
+      print-color-adjust:exact; }
+    .sheet { width:auto; min-height:0; margin:0; padding:0; box-shadow:none; }
+    thead { display:table-header-group; }
+    tr, img { page-break-inside:avoid; }
+    .tile .big { font-size:50px; }
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <table>
+    <thead>
+      <tr class="running-head">
+        <th colspan="11">
+          <div class="brand">
+            <h1>中星系統　運費明細　·　車主 林國華　·　2025年9月</h1>
+            <span class="sub">運費明細表　共 20 筆</span>
+          </div>
+        </th>
+      </tr>
+      <tr class="col-head">
+        <th>日期</th><th>路線</th><th>趟次(件數)</th><th>運費</th>
+        <th>備註1</th><th>備註2</th><th>備註3</th><th>備註4</th>
+        <th>備註5</th><th>備註6</th><th>備註7</th>
+      </tr>
+    </thead>
+    <tbody>
+<tr class="tiles-row"><td colspan="11">
+  <div class="tiles">
+    <div class="tile">
+      <div class="label"><span class="mark">&#9673;</span>總趟次</div>
+      <div class="big">57 <span class="unit">趟</span></div>
+    </div>
+    <div class="tile">
+      <div class="label"><span class="mark">&#9673;</span>總運費（NT$）</div>
+      <div class="big">186,000</div>
+    </div>
+    <div class="tile payable">
+      <div class="label"><span class="mark">&#9673;</span>應領（NT$）</div>
+      <div class="big">176,700</div>
+    </div>
+  </div>
+</td></tr>
+<tr><td class='date'>2025/09/01</td><td class='route'>台北→新竹</td><td class='num'>3</td><td class='num money'>9,750.5</td><td class='note'>準時</td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td></tr>
+<tr><td class='date'>2025/09/01</td><td class='route'>新竹→台中</td><td class='num'>2</td><td class='num money'>6,200</td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td></tr>
+<tr><td class='date'>2025/09/02</td><td class='route'>台中→彰化</td><td class='num'>4</td><td class='num money'>12,000</td><td class='note'>含吊卡</td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td></tr>
+<tr><td class='date'>2025/09/02</td><td class='route'>台北市內湖區舊宗路一段→桃園市大園區航空貨運園區轉運站</td><td class='num'>1</td><td class='num money'>4,800</td><td class='note'>需進關區</td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td></tr>
+<tr><td class='date'>2025/09/03</td><td class='route'>桃園→中壢</td><td class='num'>2</td><td class='num money'>5,500</td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td></tr>
+<tr><td class='date'>2025/09/03</td><td class='route'>台中→高雄</td><td class='num'>3</td><td class='num money'>15,000</td><td class='note'>夜間</td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td></tr>
+<tr><td class='date'>2025/09/04</td><td class='route'>高雄→台南</td><td class='num'>2</td><td class='num money'>8,000</td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td></tr>
+<tr><td class='date'>2025/09/04</td><td class='route'>台南→嘉義</td><td class='num'>3</td><td class='num money'>9,000</td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td></tr>
+<tr><td class='date'>2025/09/05</td><td class='route'>嘉義→雲林</td><td class='num'>2</td><td class='num money'>6,500</td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td></tr>
+<tr><td class='date'>2025/09/05</td><td class='route'>台北→基隆</td><td class='num'>4</td><td class='num money'>10,000</td><td class='note'>冷藏</td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td></tr>
+<tr><td class='date'>2025/09/06</td><td class='route'>基隆→宜蘭</td><td class='num'>3</td><td class='num money'>11,250</td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td></tr>
+<tr><td class='date'>2025/09/06</td><td class='route'>宜蘭→花蓮</td><td class='num'>2</td><td class='num money'>20,745.5</td><td class='note'>超重</td><td class='note'>需隨車</td><td class='note'>回程空</td><td class='note'>過磅</td><td class='note'>代墊過路費</td><td class='note'>客戶簽收</td><td class='note'>尾款未結</td></tr>
+<tr><td class='date'>2025/09/07</td><td class='route'>花蓮→台東</td><td class='num'>1</td><td class='num money'>9,000</td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td></tr>
+<tr><td class='date'>2025/09/08</td><td class='route'>台東→屏東</td><td class='num'>2</td><td class='num money'>7,500</td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td></tr>
+<tr><td class='date'>2025/09/09</td><td class='route'>屏東→高雄</td><td class='num'>4</td><td class='num money'>8,200</td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td></tr>
+<tr><td class='date'>2025/09/09</td><td class='route'>高雄→台中</td><td class='num'>3</td><td class='num money'>11,000</td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td></tr>
+<tr><td class='date'>2025/09/10</td><td class='route'>台中→苗栗</td><td class='num'>2</td><td class='num money'>5,804</td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td></tr>
+<tr><td class='date'>2025/09/11</td><td class='route'>苗栗→新竹</td><td class='num'>3</td><td class='num money'>6,800</td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td></tr>
+<tr><td class='date'>2025/09/11</td><td class='route'>新竹→桃園</td><td class='num'>2</td><td class='num money'>4,950</td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td></tr>
+<tr><td class='date'>2025/09/12</td><td class='route'>桃園→台北</td><td class='num'>9</td><td class='num money'>14,000</td><td class='note'>月底結</td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td><td class='note'></td></tr>
+<tr class='total-row'><td class='date'></td><td class='route'>合計</td><td class='num'>57</td><td class='num money'>NT$186,000</td><td class='note note-payable' colspan='7'>應領 176,700（運費 × 0.95，扣 5%）</td></tr>
+    </tbody>
+  </table>
+</div>
+</body>
+</html>
