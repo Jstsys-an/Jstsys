@@ -1,0 +1,164 @@
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>車主運費明細樣張</title>
+<style>
+  /* 版面：淺色底、置中的 A4 直式卡片；年長者取向，大字、寬行距、黑白為主 */
+  :root {
+    --page-bg: #e9eaec;      /* 卡片外的淺灰工作區 */
+    --card-bg: #ffffff;      /* A4 紙面 */
+    --ink: #1a1a1a;          /* 主要文字（近黑，刻意不用純黑） */
+    --ink-soft: #595f66;     /* 次要文字 */
+    --line: #c7ccd1;         /* 分隔線（淺灰） */
+    --line-strong: #4a4f55;  /* 粗線 */
+    --band: #f2f3f5;         /* 逐日小計灰底帶 */
+    --font-title: "Noto Serif TC", "Songti TC", serif;
+    --font-body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --page-bg: #15171a; --card-bg: #1f2227; --ink: #f2f3f5; --ink-soft: #aeb4ba;
+      --line: #3a3f45; --line-strong: #8b9298; --band: #2a2e33; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --page-bg: #15171a; --card-bg: #1f2227; --ink: #f2f3f5; --ink-soft: #aeb4ba;
+    --line: #3a3f45; --line-strong: #8b9298; --band: #2a2e33; color-scheme: dark;
+  }
+
+  body { background: var(--page-bg); color: var(--ink); font-family: var(--font-body);
+         font-variant-numeric: tabular-nums; -webkit-text-size-adjust: 100%; }
+  .wrap { padding-block: 24px;
+          padding-left: max(16px, env(safe-area-inset-left, 0px));
+          padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+  .note { max-width: 820px; margin: 0 auto 16px; color: var(--ink-soft); font-size: 14px; line-height: 1.6; }
+  .note strong { color: var(--ink); }
+
+  /* A4 直式卡片 210:297 */
+  .sheet { background: var(--card-bg); color: var(--ink);
+           width: min(820px, 100%); aspect-ratio: 210 / 297; margin: 0 auto;
+           box-shadow: 0 1px 4px rgba(0,0,0,.18), 0 8px 28px rgba(0,0,0,.12);
+           border-radius: 2px; overflow: hidden;
+           display: flex; flex-direction: column;
+           padding: clamp(18px, 4.2%, 34px); box-sizing: border-box; }
+  @media (max-width: 560px) { .sheet { aspect-ratio: auto; } }
+
+  .title { font-family: var(--font-title); font-weight: 700; color: var(--ink);
+           font-size: clamp(20px, 3.4vw, 27px); line-height: 1.25; text-wrap: balance;
+           margin: 0 0 clamp(10px, 1.8%, 16px); }
+
+  /* KPI 關鍵數字置頂、特大 */
+  .kpis { display: flex; gap: clamp(20px, 6%, 56px); margin-bottom: clamp(10px, 1.6%, 14px); }
+  .kpi-label { font-size: clamp(12px, 1.7vw, 14px); color: var(--ink-soft); margin-bottom: 2px; }
+  .kpi-num { font-weight: 700; color: var(--ink); line-height: 1.05;
+             font-size: clamp(26px, 5.2vw, 40px); }
+
+  .rule { border: 0; border-top: 2px solid var(--line-strong); margin: 0 0 clamp(6px, 1%, 10px); }
+
+  table { width: 100%; border-collapse: collapse; }
+  thead th { text-align: left; color: var(--ink); font-weight: 700;
+             font-size: clamp(12px, 1.7vw, 15px);
+             padding: 4px 6px; border-bottom: 1px solid var(--line-strong); }
+  th.num, td.num { text-align: right; white-space: nowrap; }
+
+  tbody td { font-size: clamp(12px, 1.7vw, 15px); color: var(--ink);
+             padding: clamp(4px, 0.7%, 7px) 6px; border-bottom: 1px solid var(--line);
+             vertical-align: top; }
+  td.route { width: 99%; }
+  .remark { display: block; color: var(--ink-soft); font-size: clamp(11px, 1.4vw, 12.5px);
+            margin-top: 2px; }
+
+  /* 逐日小計：灰底帶、略大、加粗 */
+  tr.subtotal td { background: var(--band); font-weight: 700;
+                   font-size: clamp(13px, 1.9vw, 16px); color: var(--ink);
+                   border-bottom: 1px solid var(--line);
+                   padding-top: 6px; padding-bottom: 6px; }
+
+  /* 本月合計：雙線 + 大字 */
+  tfoot td { font-weight: 700; color: var(--ink);
+             font-size: clamp(15px, 2.4vw, 19px);
+             padding: 10px 6px;
+             border-top: 3px double var(--line-strong);
+             border-bottom: 3px double var(--line-strong); }
+
+  .foot { margin-top: auto; padding-top: 10px; color: var(--ink-soft);
+          font-size: clamp(10px, 1.3vw, 12px); }
+</style>
+
+<div class="wrap">
+  <p class="note">
+    這是 <strong>company-os</strong> 的第一塊產出：<strong>車主運費明細 PDF 樣張</strong>（假資料）的版面預覽。
+    下方卡片為 A4 直式比例，與程式產出的 PDF 版面一致 —— 關鍵數字置頂、明細逐列、每日一條灰底小計、底部本月合計。
+  </p>
+
+  <section class="sheet" aria-label="車主運費明細樣張">
+    <h1 class="title">【林金水】 2025 年 10 月 運費明細</h1>
+
+    <div class="kpis">
+      <div>
+        <div class="kpi-label">本月趟次</div>
+        <div class="kpi-num">20 趟</div>
+      </div>
+      <div>
+        <div class="kpi-label">本月運費</div>
+        <div class="kpi-num">$ 57,950.5</div>
+      </div>
+    </div>
+
+    <hr class="rule">
+
+    <table>
+      <thead>
+        <tr>
+          <th>日期</th><th>司機</th><th>車號</th><th class="route">路線</th><th class="num">運費</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- 10/01 -->
+        <tr><td>10/01</td><td>陳建明</td><td>KEB-3271</td><td class="route">台中港→豐原倉</td><td class="num">$ 3,200</td></tr>
+        <tr><td>10/01</td><td>李志勇</td><td>872-ML</td><td class="route">沙鹿→大甲<span class="remark">備註：等候1小時</span></td><td class="num">$ 2,850</td></tr>
+        <tr><td>10/01</td><td>張文華</td><td>BNF-0096</td><td class="route">彰化市→員林</td><td class="num">$ 3,100</td></tr>
+        <tr><td>10/01</td><td>王大山</td><td>9527-TR</td><td class="route">台中火車站→霧峰</td><td class="num">$ 2,600</td></tr>
+        <tr class="subtotal"><td colspan="4">10月1日　共 4 趟</td><td class="num">小計 $ 11,750</td></tr>
+
+        <!-- 10/03（單趟） -->
+        <tr><td>10/03</td><td>李志勇</td><td>872-ML</td><td class="route">烏日→大里</td><td class="num">$ 2,200</td></tr>
+        <tr class="subtotal"><td colspan="4">10月3日　共 1 趟</td><td class="num">小計 $ 2,200</td></tr>
+
+        <!-- 10/06（含超長路線 + 備註1~7 全填） -->
+        <tr><td>10/06</td><td>陳建明</td><td>KEB-3271</td><td class="route">台中市西屯區工業區三十八路→彰化縣鹿港鎮工業東七路轉運站<span class="remark">備註：超長程　過磅18.5噸　客戶指定下午到　走國道三號　回程空車　需開立發票　代收款2000已轉帳</span></td><td class="num">$ 6,800</td></tr>
+        <tr><td>10/06</td><td>張文華</td><td>BNF-0096</td><td class="route">后里→神岡</td><td class="num">$ 2,500</td></tr>
+        <tr><td>10/06</td><td>王大山</td><td>9527-TR</td><td class="route">太平→太平工業區</td><td class="num">$ 2,100</td></tr>
+        <tr class="subtotal"><td colspan="4">10月6日　共 3 趟</td><td class="num">小計 $ 11,400</td></tr>
+
+        <!-- 10/13（含小數運費） -->
+        <tr><td>10/13</td><td>李志勇</td><td>872-ML</td><td class="route">沙鹿→大甲<span class="remark">備註：加班趟</span></td><td class="num">$ 3,250.5</td></tr>
+        <tr><td>10/13</td><td>陳建明</td><td>KEB-3271</td><td class="route">彰化市→員林</td><td class="num">$ 3,100</td></tr>
+        <tr><td>10/13</td><td>張文華</td><td>BNF-0096</td><td class="route">梧棲→清水</td><td class="num">$ 2,400</td></tr>
+        <tr class="subtotal"><td colspan="4">10月13日　共 3 趟</td><td class="num">小計 $ 8,750.5</td></tr>
+
+        <!-- 10/20 -->
+        <tr><td>10/20</td><td>王大山</td><td>9527-TR</td><td class="route">台中港→豐原倉</td><td class="num">$ 3,200</td></tr>
+        <tr><td>10/20</td><td>李志勇</td><td>872-ML</td><td class="route">烏日→大里</td><td class="num">$ 2,200</td></tr>
+        <tr><td>10/20</td><td>陳建明</td><td>KEB-3271</td><td class="route">台中火車站→霧峰<span class="remark">備註：臨時加點</span></td><td class="num">$ 2,600</td></tr>
+        <tr><td>10/20</td><td>張文華</td><td>BNF-0096</td><td class="route">后里→神岡</td><td class="num">$ 2,500</td></tr>
+        <tr class="subtotal"><td colspan="4">10月20日　共 4 趟</td><td class="num">小計 $ 10,500</td></tr>
+
+        <!-- 10/27 -->
+        <tr><td>10/27</td><td>王大山</td><td>9527-TR</td><td class="route">梧棲→清水</td><td class="num">$ 2,400</td></tr>
+        <tr><td>10/27</td><td>李志勇</td><td>872-ML</td><td class="route">沙鹿→大甲</td><td class="num">$ 2,850</td></tr>
+        <tr class="subtotal"><td colspan="4">10月27日　共 2 趟</td><td class="num">小計 $ 5,250</td></tr>
+
+        <!-- 10/31 -->
+        <tr><td>10/31</td><td>陳建明</td><td>KEB-3271</td><td class="route">彰化市→員林<span class="remark">備註：月底結帳</span></td><td class="num">$ 3,100</td></tr>
+        <tr><td>10/31</td><td>張文華</td><td>BNF-0096</td><td class="route">台中火車站→霧峰</td><td class="num">$ 2,600</td></tr>
+        <tr><td>10/31</td><td>王大山</td><td>9527-TR</td><td class="route">梧棲→清水</td><td class="num">$ 2,400</td></tr>
+        <tr class="subtotal"><td colspan="4">10月31日　共 3 趟</td><td class="num">小計 $ 8,100</td></tr>
+      </tbody>
+      <tfoot>
+        <tr><td colspan="4">本月合計　共 20 趟</td><td class="num">$ 57,950.5</td></tr>
+      </tfoot>
+    </table>
+
+    <p class="foot">本明細由系統自動產出（樣張／假資料）。空白備註欄不佔版面；若整月某備註欄全空則整欄省略。</p>
+  </section>
+</div>
