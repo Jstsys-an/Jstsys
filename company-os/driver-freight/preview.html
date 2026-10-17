@@ -1,4 +1,8 @@
-<meta name="claude:viewport-fit-sides" content="cover">
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>車主運費明細樣張</title>
 <style>
   /* 版面：淺色底、置中的 A4 直式卡片；年長者取向，大字、寬行距、黑白為主 */
@@ -35,12 +39,12 @@
 
   /* A4 直式卡片 210:297 */
   .sheet { background: var(--card-bg); color: var(--ink);
-           width: min(820px, 100%); aspect-ratio: 210 / 297; margin: 0 auto;
+           width: min(820px, 100%); min-height: min(1160px, 141.43vw); margin: 0 auto;
            box-shadow: 0 1px 4px rgba(0,0,0,.18), 0 8px 28px rgba(0,0,0,.12);
-           border-radius: 2px; overflow: hidden;
+           border-radius: 2px;
            display: flex; flex-direction: column;
            padding: clamp(18px, 4.2%, 34px); box-sizing: border-box; }
-  @media (max-width: 560px) { .sheet { aspect-ratio: auto; } }
+  @media (max-width: 560px) { .sheet { min-height: 0; } }
 
   .title { font-family: var(--font-title); font-weight: 700; color: var(--ink);
            font-size: clamp(20px, 3.4vw, 27px); line-height: 1.25; text-wrap: balance;
@@ -63,7 +67,8 @@
   tbody td { font-size: clamp(12px, 1.7vw, 15px); color: var(--ink);
              padding: clamp(4px, 0.7%, 7px) 6px; border-bottom: 1px solid var(--line);
              vertical-align: top; }
-  td.route { width: 99%; }
+  tbody td:not([colspan]):nth-child(-n+3) { white-space: nowrap; }
+  td.route { overflow-wrap: anywhere; }
   .remark { display: block; color: var(--ink-soft); font-size: clamp(11px, 1.4vw, 12.5px);
             margin-top: 2px; }
 
@@ -82,12 +87,33 @@
 
   .foot { margin-top: auto; padding-top: 10px; color: var(--ink-soft);
           font-size: clamp(10px, 1.3vw, 12px); }
+
+  @media (max-width: 560px) {
+    .wrap { overflow-x: auto; }
+    .sheet { min-width: 520px; }
+  }
+
+  @media print {
+    :root, :root:not([data-theme="light"]), :root[data-theme="dark"] {
+      --card-bg: #fff; --ink: #1a1a1a; --ink-soft: #595f66;
+      --line: #c7ccd1; --line-strong: #4a4f55; --band: #f2f3f5;
+      color-scheme: light;
+    }
+    body { margin: 0; background: #fff; }
+    .wrap { padding: 0; overflow: visible; }
+    .note { display: none; }
+    .sheet { display: block; width: 100%; min-width: 0; min-height: 0;
+            padding: 0; box-shadow: none; }
+    tr { break-inside: avoid; }
+  }
 </style>
+</head>
+<body>
 
 <div class="wrap">
   <p class="note">
     這是 <strong>company-os</strong> 的第一塊產出：<strong>車主運費明細 PDF 樣張</strong>（假資料）的版面預覽。
-    下方卡片為 A4 直式比例，與程式產出的 PDF 版面一致 —— 關鍵數字置頂、明細逐列、每日一條灰底小計、底部本月合計。
+    下方卡片以 A4 直式比例為基礎，內容較多時會延長；窄螢幕可左右捲動。與 PDF 採相同資訊結構，但字級與分頁以 PDF 為準。
   </p>
 
   <section class="sheet" aria-label="車主運費明細樣張">
@@ -98,6 +124,8 @@
         <div class="kpi-label">本月趟次</div>
         <div class="kpi-num">20 趟</div>
       </div>
+      </body>
+      </html>
       <div>
         <div class="kpi-label">本月運費</div>
         <div class="kpi-num">$ 57,950.5</div>
