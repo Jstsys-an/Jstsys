@@ -141,7 +141,11 @@ def wrap_text(text, font, size, max_width):
         return [""]
     lines = []
     cur = ""
-    for ch in text:
+    for ch in text.replace("\r\n", "\n").replace("\r", "\n"):
+        if ch == "\n":
+            lines.append(cur)
+            cur = ""
+            continue
         trial = cur + ch
         if pdfmetrics.stringWidth(trial, font, size) <= max_width:
             cur = trial
@@ -149,8 +153,7 @@ def wrap_text(text, font, size, max_width):
             if cur:
                 lines.append(cur)
             cur = ch
-    if cur:
-        lines.append(cur)
+    lines.append(cur)
     return lines or [""]
 
 
@@ -173,22 +176,18 @@ def build_pdf(rows, out_path):
     margin_bottom = 13 * mm
     content_w = page_w - 2 * margin_x
 
-    c = canvas.Canvas(out_path, pagesize=A4)
-
-    # --- 固定區塊高度估算 ---
+    # --- 固定區塊高度（與實際繪製的間距一致）---
     title_size = 23
     kpi_label_size = 13
     kpi_num_size = 28
     header_size = 13
 
-    top_block_h = (
-        title_size + 10          # 標題
-        + 14                      # 間距
-        + kpi_num_size + 6        # KPI 大數字
-        + 18                      # KPI 下方間距
-    )
+    title = f"【{owner}】 {year} 年 {int(month)} 月 運費明細"
+    title_lines = wrap_text(title, FONT_NAME, title_size, content_w)
+    title_h = len(title_lines) * (title_size + 4)
+    top_block_h = title_h + 10 + kpi_label_size + kpi_num_size + 18 + 10
     header_h = header_size + 12   # 表頭 + 其下分隔線空間
-    total_row_h = 52              # 本月合計區塊（雙線 + 大字）
+    total_row_h = 61              # 本月合計區塊（雙線 + 大字）
     footer_h = 18                 # 頁尾說明
 
     avail_rows_h = (
@@ -207,6 +206,14 @@ def build_pdf(rows, out_path):
     route_w = content_w - fixed
     # 重新排序：日期 司機 車號 路線 運費
     order = ["日期", "司機", "車號", "路線", "運費"]
+    for text, size, width in (
+        (f"{trip_count} 趟", kpi_num_size, content_w * 0.5 - 12),
+        (f"$ {fmt_money(total)}", kpi_num_size, content_w * 0.5 - 12),
+        (f"本月合計　共 {trip_count} 趟", 17, content_w * 0.5 - 12),
+        (f"$ {fmt_money(total)}", 17, content_w * 0.5 - 12),
+    ):
+        if pdfmetrics.stringWidth(text, FONT_NAME, size) > width:
+            raise ValueError("趟次或合計金額過長，無法完整顯示於單頁明細")
 
     # --- 自動字級：由大到小找能一頁塞下的最大字級（含逐日小計列）---
     def layout_metrics(body_size):
@@ -221,18 +228,32 @@ def build_pdf(rows, out_path):
         for date, grp in groups.items():
             per_row = []
             for r in grp:
-                route_lines = wrap_text(r["路線"], FONT_NAME, body_size,
-                                        route_w - 6)
+                cell_lines = {
+                    name: wrap_text(r[name][5:] if name == "日期" else r[name],
+                                    FONT_NAME, body_size,
+                                    (route_w if name == "路線" else col[name]) - 6)
+                    for name in order if name != "運費"
+                }
+                amount_width = pdfmetrics.stringWidth(
+                    f"$ {fmt_money(parse_amount(r['運費']))}", FONT_NAME, body_size)
+                if amount_width > col["運費"] - 6:
+                    total_h = float("inf")
                 rk = merged_remark(r)
                 remark_lines = (
                     wrap_text("備註：" + rk, FONT_NAME, remark_size,
-                              content_w - 12)
+                              content_w - col["日期"] - 12)
                     if rk else []
                 )
-                n_main = max(len(route_lines), 1)
+                n_main = max(map(len, cell_lines.values()))
                 h = n_main * line_h + len(remark_lines) * remark_line_h + 2
-                per_row.append((r, route_lines, remark_lines, h))
+                per_row.append((r, cell_lines, remark_lines, h))
                 total_h += h
+            subtotal_text = (
+                f"{fmt_date_cn(date)}　共 {len(grp)} 趟"
+                f"　小計  $ {fmt_money(sum(parse_amount(r['運費']) for r in grp))}"
+            )
+            if pdfmetrics.stringWidth(subtotal_text, FONT_NAME, subtotal_size) > content_w - 4:
+                total_h = float("inf")
             total_h += subtotal_h
             per_group.append((date, grp, per_row))
         meta = dict(row_gap=row_gap, remark_size=remark_size,
@@ -240,24 +261,26 @@ def build_pdf(rows, out_path):
                     remark_line_h=remark_line_h, subtotal_h=subtotal_h)
         return total_h, per_group, meta
 
-    body_size = 13
-    while body_size >= 9:
+    for step in range(9):
+        body_size = 13 - step * 0.5
         total_h, per_group, meta = layout_metrics(body_size)
         if total_h <= avail_rows_h:
             break
-        body_size -= 0.5
-    # 低於下限仍塞不下時，用最小字級盡力呈現
-    total_h, per_group, meta = layout_metrics(body_size)
+    else:
+        raise ValueError("資料過多或文字過長，無法在 9pt 下完整放入單頁；請減少資料或縮短文字")
 
     # === 開始繪製 ===
+    os.makedirs(os.path.dirname(os.path.abspath(out_path)), exist_ok=True)
+    c = canvas.Canvas(os.fspath(out_path), pagesize=A4)
     y = page_h - margin_top
 
     # 標題
     c.setFillGray(0)
     c.setFont(FONT_NAME, title_size)
-    title = f"【{owner}】 {year} 年 {int(month)} 月 運費明細"
-    c.drawString(margin_x, y - title_size, title)
-    y -= title_size + 14
+    for title_line in title_lines:
+        c.drawString(margin_x, y - title_size, title_line)
+        y -= title_size + 4
+    y -= 10
 
     # KPI 大數字區
     c.setFont(FONT_NAME, kpi_label_size)
@@ -311,23 +334,18 @@ def build_pdf(rows, out_path):
 
     # 明細列（依日期分組，每組後接「逐日小計」）
     for date, grp, per_row in per_group:
-        for r, route_lines, remark_lines, h in per_row:
+        for r, cell_lines, remark_lines, h in per_row:
             row_top = y
             c.setFont(FONT_NAME, body_size)
             c.setFillGray(0)
             base = y - body_size
-            # 第一行：日期/司機/車號/路線首行/運費
-            c.drawString(col_x("日期"), base, r["日期"][5:])  # 去年份，省空間
-            c.drawString(col_x("司機"), base, r["司機"])
-            c.drawString(col_x("車號"), base, r["車號"])
-            c.drawString(col_x("路線"), base, route_lines[0])
+            # 各欄分別換行，避免長姓名、車號或路線覆蓋相鄰欄位
+            for name, lines in cell_lines.items():
+                for index, text in enumerate(lines):
+                    c.drawString(col_x(name), base - index * line_h, text)
             c.drawRightString(margin_x + content_w, base,
                               f"$ {fmt_money(parse_amount(r['運費']))}")
-            yy = base - line_h
-            # 路線續行
-            for extra in route_lines[1:]:
-                c.drawString(col_x("路線"), yy, extra)
-                yy -= line_h
+            yy = base - max(map(len, cell_lines.values())) * line_h
             # 備註（小字、灰）
             if remark_lines:
                 c.setFont(FONT_NAME, remark_size)
@@ -379,7 +397,7 @@ def build_pdf(rows, out_path):
     c.setFont(FONT_NAME, 9)
     c.setFillGray(0.5)
     c.drawString(margin_x, margin_bottom - 4,
-                 f"本明細為系統自動產出（樣張 / 假資料）　內文字級：{body_size:.1f}pt")
+                 f"本明細為系統自動產出　內文字級：{body_size:.1f}pt")
 
     c.showPage()
     c.save()
