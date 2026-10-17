@@ -20,8 +20,11 @@
 
 import csv
 import os
+import re
 import sys
 from collections import OrderedDict
+from datetime import date
+from decimal import Decimal, InvalidOperation
 
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
@@ -34,6 +37,7 @@ FONT_NAME = "STSong-Light"
 pdfmetrics.registerFont(UnicodeCIDFont(FONT_NAME))
 
 REMARK_COLS = [f"備註{i}" for i in range(1, 8)]
+REQUIRED_COLS = ["日期", "車主", "司機", "車號", "路線", "運費"]
 
 
 # ---------------------------------------------------------------------------
@@ -42,8 +46,22 @@ REMARK_COLS = [f"備註{i}" for i in range(1, 8)]
 def load_rows(csv_path):
     """讀寬表，回傳 list[dict]。"""
     with open(csv_path, newline="", encoding="utf-8-sig") as f:
-        reader = csv.DictReader(f)
-        rows = [{k: (v or "").strip() for k, v in r.items()} for r in reader]
+        reader = csv.DictReader(f, strict=True)
+        if not reader.fieldnames:
+            raise ValueError("CSV 缺少欄位名稱")
+        fields = [name.strip() for name in reader.fieldnames]
+        if "" in fields or len(fields) != len(set(fields)):
+            raise ValueError("CSV 欄位名稱不可空白或重複")
+        missing = set(REQUIRED_COLS) - set(fields)
+        if missing:
+            raise ValueError("CSV 缺少必要欄位：" + "、".join(sorted(missing)))
+        reader.fieldnames = fields
+        rows = []
+        for r in reader:
+            if None in r or any(v is None for v in r.values()):
+                raise ValueError(f"CSV 第 {reader.line_num} 行欄位數量不符")
+            rows.append({k: v.strip() for k, v in r.items()})
+    validate_rows(rows)
     return rows
 
 
@@ -55,17 +73,46 @@ def merged_remark(row):
 
 
 def parse_amount(s):
+    """解析十進位金額；不可把錯誤資料當成零元。"""
+    text = str(s).strip()
+    if not re.fullmatch(r"[+-]?(?:[0-9]+|[0-9]{1,3}(?:,[0-9]{3})+)(?:\.[0-9]+)?", text):
+        raise ValueError(f"無效運費金額：{s!r}")
     try:
-        return float(s)
-    except (TypeError, ValueError):
-        return 0.0
+        return Decimal(text.replace(",", ""))
+    except InvalidOperation as exc:
+        raise ValueError(f"無效運費金額：{s!r}") from exc
 
 
 def fmt_money(v):
     """整數不帶小數、有小數才顯示小數，並加千分位。"""
-    if abs(v - round(v)) < 1e-9:
-        return f"{int(round(v)):,}"
-    return f"{v:,.1f}"
+    text = f"{v:,f}"
+    return text.rstrip("0").rstrip(".") if "." in text else text
+
+
+def validate_rows(rows):
+    """一張明細只能包含單一車主、單月的有效資料。"""
+    if not rows:
+        raise ValueError("沒有資料")
+    owners = set()
+    months = set()
+    for number, row in enumerate(rows, 1):
+        for field in REQUIRED_COLS:
+            if not isinstance(row.get(field), str) or not row[field].strip():
+                raise ValueError(f"第 {number} 筆缺少必要欄位：{field}")
+        try:
+            day = date.fromisoformat(row["日期"])
+            if day.isoformat() != row["日期"]:
+                raise ValueError
+        except ValueError as exc:
+            raise ValueError(f"第 {number} 筆日期須為有效的 YYYY-MM-DD") from exc
+        try:
+            parse_amount(row["運費"])
+        except ValueError as exc:
+            raise ValueError(f"第 {number} 筆：{exc}") from exc
+        owners.add(row["車主"])
+        months.add((day.year, day.month))
+    if len(owners) != 1 or len(months) != 1:
+        raise ValueError("每份明細只能包含單一車主、單一月份")
 
 
 def group_by_date(rows):
@@ -111,9 +158,9 @@ def wrap_text(text, font, size, max_width):
 # PDF 繪製
 # ---------------------------------------------------------------------------
 def build_pdf(rows, out_path):
-    owner = rows[0]["車主"] if rows else "車主"
-    # 由第一列日期推月份（假設同月）
-    first_date = rows[0]["日期"] if rows else "2025-10-01"
+    validate_rows(rows)
+    owner = rows[0]["車主"]
+    first_date = rows[0]["日期"]
     year, month = first_date.split("-")[0], first_date.split("-")[1]
 
     trip_count = len(rows)
@@ -345,11 +392,12 @@ def main():
         here, "data", "freight_wide_sample.csv")
     out_path = sys.argv[2] if len(sys.argv) > 2 else os.path.join(
         here, "output", "freight_statement_sample.pdf")
-    rows = load_rows(csv_path)
-    if not rows:
-        print("沒有資料", file=sys.stderr)
+    try:
+        rows = load_rows(csv_path)
+        out, n, total, size = build_pdf(rows, out_path)
+    except (OSError, UnicodeError, csv.Error, ValueError) as exc:
+        print(f"錯誤：{exc}", file=sys.stderr)
         sys.exit(1)
-    out, n, total, size = build_pdf(rows, out_path)
     print(f"OK  → {out}")
     print(f"趟次={n}  合計={fmt_money(total)}  內文字級={size:.1f}pt")
 
