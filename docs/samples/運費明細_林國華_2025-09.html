@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>中星系統 運費明細 · 林國華 · 2025年9月</title>
+<style>
+  @page {
+    size: A4 portrait;
+    margin: 14mm 12mm 14mm 12mm;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    font-family: "Noto Sans CJK TC", "Noto Sans TC", "PingFang TC",
+                 "Microsoft JhengHei", "Heiti TC", sans-serif;
+    color: #1a1a1a;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  body { font-size: 15px; line-height: 1.5; }
+
+  /* 頁首：用 thead 讓每頁自動重複 */
+  .doc-header {
+    border-bottom: 3px solid #0b3d91;
+    padding-bottom: 8px;
+    margin-bottom: 4px;
+  }
+  .doc-header .brand {
+    font-size: 22px; font-weight: 800; color: #0b3d91;
+    letter-spacing: 1px;
+  }
+  .doc-header .meta {
+    font-size: 17px; font-weight: 600; color: #333; margin-top: 3px;
+  }
+  .doc-header .meta b { color: #0b3d91; }
+
+  /* 摘要磚 */
+  .tiles {
+    display: flex; gap: 12px; margin: 10px 0 14px 0;
+  }
+  .tile {
+    flex: 1; border: 2px solid #0b3d91; border-radius: 10px;
+    padding: 12px 14px; text-align: center; background: #f3f7ff;
+  }
+  .tile.pay { border-color: #b00020; background: #fff3f4; }
+  .tile .cap {
+    font-size: 16px; font-weight: 700; color: #0b3d91; margin-bottom: 6px;
+  }
+  .tile.pay .cap { color: #b00020; }
+  .tile .big {
+    font-size: 58px; font-weight: 900; line-height: 1.05;
+    color: #0b3d91; white-space: nowrap;
+  }
+  .tile.pay .big { color: #b00020; }
+  .tile .unit { font-size: 20px; font-weight: 700; }
+
+  /* 明細表 */
+  table.detail {
+    width: 100%; border-collapse: collapse; margin-top: 4px;
+  }
+  table.detail thead.col th {
+    background: #0b3d91; color: #fff; font-size: 16px; font-weight: 700;
+    padding: 9px 8px; border: 1px solid #0b3d91; text-align: center;
+  }
+  table.detail tbody td {
+    padding: 9px 8px; border: 1px solid #c9d4e8; font-size: 15px;
+    vertical-align: top;
+  }
+  table.detail tbody tr { page-break-inside: avoid; }
+  table.detail tbody tr:nth-child(even) { background: #f6f9ff; }
+  .c-date { white-space: nowrap; text-align: center; font-weight: 600; width: 58px; }
+  .c-plate { white-space: nowrap; text-align: center; width: 78px; }
+  .c-route { text-align: left; }
+  .c-num { text-align: center; font-weight: 700; width: 48px; }
+  .c-money { text-align: right; white-space: nowrap; font-weight: 700; width: 92px; }
+  .c-note { text-align: left; width: 150px; color: #444; }
+
+  /* 合計列：只出現一次 */
+  tr.total td {
+    background: #0b3d91 !important; color: #fff; font-weight: 800;
+    font-size: 17px; padding: 11px 8px; border: 1px solid #0b3d91;
+  }
+  tr.total .lbl { text-align: right; }
+  tr.total .c-num { color: #fff; }
+  tr.total .c-money { color: #fff; }
+  tr.total .pay { color: #ffd1d6; }
+
+  .foot {
+    margin-top: 10px; font-size: 13px; color: #666; text-align: right;
+  }
+
+  /* 列印時降大字避免 6 位數被切 */
+  @media print {
+    .tile .big { font-size: 50px; }
+  }
+</style>
+</head>
+<body>
+  <div class="tiles">
+    <div class="tile">
+      <div class="cap">總趟次</div>
+      <div class="big">57</div>
+      <div class="unit">趟</div>
+    </div>
+    <div class="tile">
+      <div class="cap">運費總額　NT$</div>
+      <div class="big">186,000</div>
+    </div>
+    <div class="tile pay">
+      <div class="cap">應領金額　NT$</div>
+      <div class="big">176,700</div>
+    </div>
+  </div>
+  <table class="detail">
+    <thead class="col">
+      <tr>
+        <th colspan="6" style="background:#fff;border:none;padding:0;">
+          <div class="doc-header">
+            <div class="brand">中星系統　運費明細</div>
+            <div class="meta">車主 <b>林國華</b>　·　<b>2025 年 9 月</b></div>
+          </div>
+        </th>
+      </tr>
+      <tr>
+        <th>日期</th>
+        <th>車號</th>
+        <th>路線</th>
+        <th>趟次</th>
+        <th>運費 (NT$)</th>
+        <th>備註</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td class="c-date">09/01</td>
+          <td class="c-plate">KEB-3271</td>
+          <td class="c-route">台中港 → 台北內湖</td>
+          <td class="c-num">3</td>
+          <td class="c-money">8,200</td>
+          <td class="c-note">準點</td>
+        </tr>
+        <tr>
+          <td class="c-date">09/02</td>
+          <td class="c-plate">KEB-3271</td>
+          <td class="c-route">桃園蘆竹 → 高雄前鎮</td>
+          <td class="c-num">2</td>
+          <td class="c-money">12,500</td>
+          <td class="c-note">等候卸貨 40 分</td>
+        </tr>
+        <tr>
+          <td class="c-date">09/03</td>
+          <td class="c-plate">TPL-8864</td>
+          <td class="c-route">新北五股工業區 → 台南永康科技工業園區 → 高雄楠梓加工出口區（三段轉運）</td>
+          <td class="c-num">4</td>
+          <td class="c-money">9,750.5</td>
+          <td class="c-note">超長路線，跨三個轉運點，含夜間時段、代墊過路費與臨時改道繞行費用，當日往返逾十二小時已另計加班</td>
+        </tr>
+        <tr>
+          <td class="c-date">09/04</td>
+          <td class="c-plate">KEB-3271</td>
+          <td class="c-route">台中沙鹿 → 彰化鹿港</td>
+          <td class="c-num">3</td>
+          <td class="c-money">6,800</td>
+          <td class="c-note">回程空車</td>
+        </tr>
+        <tr>
+          <td class="c-date">09/05</td>
+          <td class="c-plate">TPL-8864</td>
+          <td class="c-route">新竹湖口 → 台中大雅</td>
+          <td class="c-num">2</td>
+          <td class="c-money">9,300</td>
+          <td class="c-note">準點</td>
+        </tr>
+        <tr>
+          <td class="c-date">09/08</td>
+          <td class="c-plate">KEB-3271</td>
+          <td class="c-route">基隆港 → 桃園大園</td>
+          <td class="c-num">3</td>
+          <td class="c-money">7,600</td>
+          <td class="c-note">雨天路滑延誤</td>
+        </tr>
+        <tr>
+          <td class="c-date">09/09</td>
+          <td class="c-plate">TPL-8864</td>
+          <td class="c-route">台南安平 → 嘉義民雄</td>
+          <td class="c-num">2</td>
+          <td class="c-money">11,200</td>
+          <td class="c-note">代收貨款</td>
+        </tr>
+        <tr>
+          <td class="c-date">09/10</td>
+          <td class="c-plate">KEB-3271</td>
+          <td class="c-route">高雄小港 → 屏東內埔</td>
+          <td class="c-num">4</td>
+          <td class="c-money">5,400</td>
+          <td class="c-note">準點</td>
+        </tr>
+        <tr>
+          <td class="c-date">09/11</td>
+          <td class="c-plate">TPL-8864</td>
+          <td class="c-route">台中烏日 → 苗栗頭份</td>
+          <td class="c-num">3</td>
+          <td class="c-money">13,800</td>
+          <td class="c-note">貨主臨時加點</td>
+        </tr>
+        <tr>
+          <td class="c-date">09/12</td>
+          <td class="c-plate">KEB-3271</td>
+          <td class="c-route">新北汐止 → 宜蘭蘇澳</td>
+          <td class="c-num">2</td>
+          <td class="c-money">7,900</td>
+          <td class="c-note">準點</td>
+        </tr>
+        <tr>
+          <td class="c-date">09/15</td>
+          <td class="c-plate">TPL-8864</td>
+          <td class="c-route">彰化和美 → 雲林斗六</td>
+          <td class="c-num">3</td>
+          <td class="c-money">6,300</td>
+          <td class="c-note">超載退回重整</td>
+        </tr>
+        <tr>
+          <td class="c-date">09/16</td>
+          <td class="c-plate">KEB-3271</td>
+          <td class="c-route">桃園觀音 → 新竹科學園區</td>
+          <td class="c-num">2</td>
+          <td class="c-money">10,500</td>
+          <td class="c-note">準點</td>
+        </tr>
+        <tr>
+          <td class="c-date">09/17</td>
+          <td class="c-plate">TPL-8864</td>
+          <td class="c-route">台南新市 → 高雄仁武</td>
+          <td class="c-num">4</td>
+          <td class="c-money">8,700</td>
+          <td class="c-note">假日加成</td>
+        </tr>
+        <tr>
+          <td class="c-date">09/18</td>
+          <td class="c-plate">KEB-3271</td>
+          <td class="c-route">台中豐原 → 南投草屯</td>
+          <td class="c-num">3</td>
+          <td class="c-money">9,100</td>
+          <td class="c-note">準點</td>
+        </tr>
+        <tr>
+          <td class="c-date">09/19</td>
+          <td class="c-plate">TPL-8864</td>
+          <td class="c-route">新北林口 → 桃園龜山</td>
+          <td class="c-num">2</td>
+          <td class="c-money">7,200</td>
+          <td class="c-note">等待裝櫃</td>
+        </tr>
+        <tr>
+          <td class="c-date">09/22</td>
+          <td class="c-plate">KEB-3271</td>
+          <td class="c-route">嘉義太保 → 台南善化</td>
+          <td class="c-num">3</td>
+          <td class="c-money">12,800</td>
+          <td class="c-note">準點</td>
+        </tr>
+        <tr>
+          <td class="c-date">09/23</td>
+          <td class="c-plate">TPL-8864</td>
+          <td class="c-route">高雄大寮 → 屏東潮州</td>
+          <td class="c-num">2</td>
+          <td class="c-money">20,745.5</td>
+          <td class="c-note">夜間配送</td>
+        </tr>
+        <tr>
+          <td class="c-date">09/24</td>
+          <td class="c-plate">KEB-3271</td>
+          <td class="c-route">台中神岡 → 彰化員林</td>
+          <td class="c-num">4</td>
+          <td class="c-money">6,900</td>
+          <td class="c-note">準點</td>
+        </tr>
+        <tr>
+          <td class="c-date">09/25</td>
+          <td class="c-plate">TPL-8864</td>
+          <td class="c-route">新竹竹北 → 苗栗竹南</td>
+          <td class="c-num">3</td>
+          <td class="c-money">5,600</td>
+          <td class="c-note">代墊過磅費</td>
+        </tr>
+        <tr>
+          <td class="c-date">09/26</td>
+          <td class="c-plate">KEB-3271</td>
+          <td class="c-route">基隆七堵 → 新北樹林</td>
+          <td class="c-num">3</td>
+          <td class="c-money">5,704</td>
+          <td class="c-note">準點</td>
+        </tr>
+      <tr class="total">
+        <td class="lbl" colspan="3">合計</td>
+        <td class="c-num">57</td>
+        <td class="c-money">186,000</td>
+        <td class="pay">應領 176,700</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="foot">※ 本表為樣張（假資料）。應領金額＝運費總額 × 95%（扣 5% 管理費）。</div>
+</body>
+</html>
